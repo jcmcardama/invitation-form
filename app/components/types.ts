@@ -16,5 +16,4 @@ export interface RsvpSubmission {
   attending: boolean;
   guests: Guest[]; // empty array if not attending
   message: string;
-  dietaryRestrictions: string;
 }

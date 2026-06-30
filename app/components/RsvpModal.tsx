@@ -28,7 +28,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
   const [attending, setAttending] = useState<boolean | null>(null);
   const [guests, setGuests] = useState<Guest[]>([createBlankGuest()]);
   const [message, setMessage] = useState("");
-  const [dietaryRestrictions, setDietaryRestrictions] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -90,7 +89,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
       attending,
       guests: attending ? guests : [],
       message,
-      dietaryRestrictions,
     };
 
     setIsSubmitting(true);
@@ -119,7 +117,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
       setAttending(null);
       setGuests([createBlankGuest()]);
       setMessage("");
-      setDietaryRestrictions("");
       setIsSubmitted(false);
       setErrorMsg("");
     }, 300);
@@ -147,8 +144,11 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
               File name: eli-thank-you.png
               Place in: /public/eli-thank-you.png
             */}
-            <div className="w-48 h-48 bg-amber-100 border-4 border-dashed border-amber-400 rounded-full flex items-center justify-center mb-6">
-              <span className="text-5xl">🎉</span>
+            <div className="w-48 h-48 flex items-center justify-center mb-6">
+              <img
+                src="/eli-thank-you.png"
+                alt="Eli's One Piece Birthday Sucess"
+              />
             </div>
             <h2 className="text-2xl font-extrabold text-blue-900 mb-2">
               {attending ? "Welcome to the Crew!" : "Thanks for letting us know!"}
@@ -225,19 +225,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
                     onChange={(e) => setMessage(e.target.value)}
                     rows={3}
                     placeholder="Wishing you a wonderful day!"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-blue-900 mb-1">
-                    Dietary Restrictions{" "}
-                    <span className="text-gray-400 font-normal">(optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={dietaryRestrictions}
-                    onChange={(e) => setDietaryRestrictions(e.target.value)}
-                    placeholder="e.g. nut allergy"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>

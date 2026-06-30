@@ -22,7 +22,6 @@ interface RsvpSubmission {
   attending: boolean;
   guests: Guest[];
   message: string;
-  dietaryRestrictions: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -84,7 +83,6 @@ export async function POST(request: NextRequest) {
       KidCount: kidCount,
       GuestDetails: guestSummary, // e.g. "1. Jane Doe (Adult) | 2. Tim Doe (Kid)"
       Message: body.message || "",
-      DietaryRestrictions: body.dietaryRestrictions || "",
     });
 
     return NextResponse.json({ success: true });
