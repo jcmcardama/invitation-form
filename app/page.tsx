@@ -37,7 +37,7 @@ export default function HomePage() {
             className="w-full h-auto rounded-2xl shadow-lg"
           />
       */}
-      <div className="w-full max-w-md aspect-[4/5] bg-blue-950/40 border-4 border-dashed border-amber-300 rounded-2xl flex flex-col items-center justify-center text-center p-6 shadow-lg">
+      <div className="w-full max-w-md aspect-[4/5] bg-blue-950/40 border-amber-300 rounded-2xl flex flex-col items-center justify-center text-center p-6 shadow-lg">
         <img
           src="/eli_invitation.jpg"
           alt="Eli's One Piece Birthday Invitation"
