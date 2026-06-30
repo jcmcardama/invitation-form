@@ -84,7 +84,7 @@ This is the part that sounds scary but is just a series of clicks. You're creati
 2. Name it something like "Eli's Birthday RSVPs".
 3. In Row 1, add these exact column headers (this matches what the code expects):
    ```
-   Timestamp | Attending | TotalGuests | AdultCount | KidCount | GuestDetails | Message | DietaryRestrictions
+   Timestamp | Attending | TotalGuests | AdultCount | KidCount | GuestDetails | Message 
    ```
 4. Look at the URL in your browser. It looks like:
    ```
