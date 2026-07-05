@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import RsvpModal from "./components/RsvpModal";
+import Footer from "./components/Footer";
 
 export default function HomePage() {
   // Controls whether the RSVP modal is visible
@@ -58,6 +59,8 @@ export default function HomePage() {
       >
         ⚓ RSVP to the Crew
       </button>
+
+      <Footer />
 
       {/* RSVP Modal — only rendered logic lives inside the component,
           but it controls its own visibility via the isOpen prop */}
