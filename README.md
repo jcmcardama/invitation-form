@@ -2,8 +2,6 @@
 
 A mobile-first, one-page RSVP web app built with Next.js, TypeScript, and Tailwind CSS. Responses are saved directly to a Google Sheet — no database needed.
 
-This README assumes you've never used Next.js before. Follow it top to bottom.
-
 ---
 
 ## 1. What's inside this folder
@@ -15,6 +13,7 @@ eli-rsvp/
 │   ├── layout.tsx               ← wraps every page (sets the page title)
 │   ├── globals.css              ← Tailwind setup + the modal's slide-up animation
 │   ├── components/
+│   │   ├── Footer.tsx           ← the footer of the application
 │   │   ├── RsvpModal.tsx        ← the popup form — all the form logic lives here
 │   │   ├── GuestRow.tsx         ← one guest's fields (name + adult/kid) — reused per guest
 │   │   └── types.ts             ← shared TypeScript type definitions
@@ -61,9 +60,9 @@ This may take a minute. It's normal to see some warnings about "deprecated" pack
 ### Step 4: Set up your environment variables
 Copy the example file:
 ```bash
-cp .env.local.example .env.local
+cp .env.local.example .env
 ```
-Then open `.env.local` in your code editor — you'll fill this in during Section 3 below (Google Sheets setup).
+Then open `.env` in your code editor — you'll fill this in during Section 3 below (Google Sheets setup).
 
 ### Step 5: Run the app locally
 ```bash
@@ -130,8 +129,8 @@ You need two values from this file: `client_email` and `private_key`.
 
 This step is the one people most often forget. Without it, the API will reject every request.
 
-### Step 7: Fill in your `.env.local` file
-Open `.env.local` and fill it in like this:
+### Step 7: Fill in your `.env` file
+Open `.env` and fill it in like this:
 ```
 GOOGLE_SERVICE_ACCOUNT_EMAIL=rsvp-sheet-writer@eli-rsvp-app.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgk...\n-----END PRIVATE KEY-----\n"
@@ -147,82 +146,19 @@ Open the app, click "RSVP to the Crew", fill out the form, and submit. Check you
 
 ---
 
-## 4. Adding your real images
-
-Open the comments inside `app/page.tsx` — they tell you exactly what dimensions and file format to export from Canva for each image slot. In short:
-
-- **Main invitation**: 1080×1350px (4:5 ratio), JPG, saved as `public/eli-invitation.jpg`
-- **Footer graphic**: 1080×400px, PNG or JPG, saved as `public/eli-footer.png`
-- **Thank-you graphic** (inside `RsvpModal.tsx`): 800×800px, PNG with transparency works best, saved as `public/eli-thank-you.png`
-
-Once your designer exports these, just drop the files into the `public/` folder and swap the placeholder `<div>` for an `<img>` tag — the exact code to use is written right above each placeholder in the comments.
-
----
-
-## 5. Deploying to Vercel
+## 4. Deploying to Vercel
 
 1. Push this project to a GitHub repository (create one at [github.com/new](https://github.com/new), then follow GitHub's instructions to push your local folder).
 2. Go to [vercel.com](https://vercel.com) and sign up/log in with your GitHub account.
 3. Click **Add New → Project**, and select your repository.
-4. Before clicking deploy, expand **Environment Variables** and add the same three values from your `.env.local` file:
+4. Before clicking deploy, expand **Environment Variables** and add the same three values from your `.env` file:
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
    - `GOOGLE_PRIVATE_KEY`
    - `GOOGLE_SHEET_ID`
 5. Click **Deploy**. After a minute, you'll get a live URL you can share with guests.
 
-Your `.env.local` file never gets uploaded to GitHub (it's listed in `.gitignore`), so this environment variable step in Vercel is the only way your live site learns the credentials.
+Your `.env` file never gets uploaded to GitHub (it's listed in `.gitignore`), so this environment variable step in Vercel is the only way your live site learns the credentials.
 
 ---
 
-## 6. How the dynamic "Add more guests" feature works (plain-English explanation)
-
-This is the trickiest part of the app, so here's how it works without jargon.
-
-**The core idea: a list that React watches.**
-Inside `RsvpModal.tsx`, there's a single variable called `guests`. It's a *list* (an array) of guest objects, and each guest object looks like:
-```
-{ id: "guest-123", firstName: "", lastName: "", guestType: "Adult" }
-```
-
-React has a special way of storing variables called "state" — when a state variable changes, React automatically re-draws (re-renders) anything on the screen that depends on it. Our `guests` list is one of these state variables.
-
-**Adding a guest:**
-When you click "Add more guests", the code doesn't edit anything directly. Instead, it creates a brand new list that's a copy of the old one, plus one new blank guest tacked on the end:
-```
-setGuests(previousGuests => [...previousGuests, newBlankGuest])
-```
-React sees the list changed, and automatically renders one more `<GuestRow>` component on screen — which is the reusable piece that displays a single guest's First Name, Last Name, and Adult/Kid toggle.
-
-**Why a separate `GuestRow` component?**
-Rather than copy-pasting the same three form fields over and over, we wrote one small "guest row" component once, and the parent form simply loops over the `guests` list and draws one `GuestRow` per entry:
-```
-{guests.map(guest => <GuestRow guest={guest} ... />)}
-```
-This is why clicking "Add more guests" instantly shows a full new set of fields — you're not adding HTML, you're adding one more item to a list, and React handles drawing it for you.
-
-**Editing a specific guest's name:**
-Each `GuestRow` reports changes back up to the parent (the modal) whenever you type. The parent finds the matching guest by its unique `id` and updates just that one entry, leaving the others untouched:
-```
-setGuests(previousGuests =>
-  previousGuests.map(g => g.id === idThatChanged ? {...g, firstName: newValue} : g)
-)
-```
-
-**The live counter:**
-The text above the submit button (e.g. "Submit for 4 people (3 adults, 1 kid)") isn't stored anywhere — it's calculated fresh every time the screen redraws, directly from the current `guests` list:
-```
-adultCount = guests.filter(g => g.guestType === "Adult").length
-```
-Because it's recalculated every render, it's always accurate and never goes "out of sync" with the actual fields.
-
-**Submitting:**
-When you hit Submit, the entire `guests` list — however many people are in it — gets bundled into one JSON object alongside the attendance choice and message, and sent to `app/api/rsvp/route.ts`. That file flattens the whole guest list into one readable text string (e.g. `"1. Jane Doe (Adult) | 2. Tim Doe (Kid)"`) and writes it as a single row in your Google Sheet, so you never end up with duplicate or scattered rows per family.
-
----
-
-## 7. Troubleshooting
-
-- **"Module not found" errors** → run `npm install` again, make sure you're in the right folder.
-- **Form submits but nothing appears in the Sheet** → double-check Step 6 of Section 3 (you must Share the sheet with the service account email as an Editor).
-- **"invalid_grant" or auth errors** → your `GOOGLE_PRIVATE_KEY` in `.env.local` likely lost its `\n` characters or quote marks when copy-pasted. Copy it again directly from the downloaded JSON file.
-- **Styles look broken / unstyled** → stop the dev server and restart it (`Ctrl+C` then `npm run dev`); Tailwind sometimes needs a fresh restart after first install.
+Made with ❤️ by Jan Carlo M. Cardama

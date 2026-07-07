@@ -21,10 +21,6 @@ function createBlankGuest(): Guest {
 }
 
 export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
-  // ----------------------------------------------------------------
-  // STATE: every piece of data the form needs to track lives here.
-  // "attending" starts as null because the user hasn't chosen yet.
-  // ----------------------------------------------------------------
   const [attending, setAttending] = useState<boolean | null>(null);
   const [guests, setGuests] = useState<Guest[]>([createBlankGuest()]);
   const [message, setMessage] = useState("");
@@ -34,12 +30,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
 
   if (!isOpen) return null;
 
-  // ----------------------------------------------------------------
-  // GUEST LIST HANDLERS
-  // ----------------------------------------------------------------
-  // "Add more guests" — appends a fresh blank guest object to the array.
-  // Because React re-renders whenever state changes, this instantly
-  // shows a new set of First Name / Last Name / Adult-Kid fields.
   function handleAddGuest() {
     setGuests((prev) => [...prev, createBlankGuest()]);
   }
@@ -56,11 +46,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
     setGuests((prev) => prev.filter((g) => g.id !== id));
   }
 
-  // ----------------------------------------------------------------
-  // LIVE COUNTER — recalculated on every render from current state.
-  // No extra state needed; it's always in sync because it's derived
-  // directly from the `guests` array.
-  // ----------------------------------------------------------------
   const adultCount = guests.filter((g) => g.guestType === "Adult").length;
   const kidCount = guests.filter((g) => g.guestType === "Kid").length;
   const totalCount = guests.length;
@@ -73,9 +58,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
     return `Submit for ${totalCount} ${totalCount === 1 ? "person" : "people"}${breakdown}`;
   }
 
-  // ----------------------------------------------------------------
-  // SUBMISSION
-  // ----------------------------------------------------------------
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg("");
@@ -125,25 +107,12 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
   return (
     // Overlay backdrop
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm">
-      {/* Modal card — slides up from bottom on mobile, centered on larger screens */}
       <div
         className="w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl
                    max-h-[90vh] overflow-y-auto animate-slide-up"
       >
-        {/* ============================================== */}
-        {/* SUCCESS STATE                                    */}
-        {/* ============================================== */}
         {isSubmitted ? (
           <div className="p-8 flex flex-col items-center text-center">
-            {/*
-              DESIGNER SPEC — "Thank you" graphic placeholder
-              ------------------------------------------------
-              Recommended: 800 x 800px (1:1 square), PNG with
-              transparent background works best here (e.g. a
-              Straw Hat crew illustration waving goodbye).
-              File name: eli-thank-you.png
-              Place in: /public/eli-thank-you.png
-            */}
             <div className="w-48 h-48 flex items-center justify-center mb-6">
               <img
                 src="/eli-thank-you.png"
@@ -181,9 +150,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
               </button>
             </div>
 
-            {/* ============================================== */}
-            {/* STEP 1: Binary attending choice                  */}
-            {/* ============================================== */}
             <div className="grid grid-cols-2 gap-3 mb-6">
               <button
                 type="button"
@@ -211,9 +177,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
               </button>
             </div>
 
-            {/* ============================================== */}
-            {/* CONDITIONAL: Not attending                       */}
-            {/* ============================================== */}
             {attending === false && (
               <div className="space-y-4 mb-4">
                 <div>
@@ -231,9 +194,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
               </div>
             )}
 
-            {/* ============================================== */}
-            {/* CONDITIONAL: Attending                           */}
-            {/* ============================================== */}
             {attending === true && (
               <div className="mb-4">
                 {guests.map((guest, index) => (
@@ -271,9 +231,6 @@ export default function RsvpModal({ isOpen, onClose }: RsvpModalProps) {
               </div>
             )}
 
-            {/* ============================================== */}
-            {/* LIVE COUNTER + SUBMIT                            */}
-            {/* ============================================== */}
             {attending !== null && (
               <>
                 {attending === true && (

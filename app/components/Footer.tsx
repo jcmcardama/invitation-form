@@ -1,5 +1,4 @@
 // Footer component for Eli's Birthday RSVP app.
-// Minimal style — name, copyright year, and three icon links.
 
 export default function Footer() {
   const year = new Date().getFullYear();

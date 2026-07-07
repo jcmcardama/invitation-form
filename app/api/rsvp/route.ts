@@ -9,9 +9,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 
-// The shape of data we expect to receive from the frontend.
-// (Duplicated here intentionally — API routes shouldn't import
-// frontend-only files to keep server and client code separate.)
 interface Guest {
   firstName: string;
   lastName: string;
@@ -56,13 +53,6 @@ export async function POST(request: NextRequest) {
     await doc.loadInfo(); // fetches sheet metadata
     const sheet = doc.sheetsByIndex[0]; // uses the first tab in the spreadsheet
 
-    // --------------------------------------------------------------
-    // BUILD ONE ROW (Option A: one row per submission)
-    // Instead of creating a separate row per guest, we flatten the
-    // entire guest list into a single readable text string and store
-    // it in one cell. This avoids duplicate/multiple rows per family
-    // and keeps each submission as a single, clean record.
-    // --------------------------------------------------------------
     const guestSummary = body.attending
       ? body.guests
           .map(
